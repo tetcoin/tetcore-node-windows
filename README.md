@@ -1,6 +1,6 @@
-# Substrate Node Template
+# Tetcore Node Template
 
-A fresh FRAME-based [Substrate](https://www.substrate.io/) node, ready for hacking :rocket:
+A fresh FABRIC-based [Tetcore](https://core.tetcoin.org/) node, ready for hacking :rocket:
 
 ## Getting Started
 
