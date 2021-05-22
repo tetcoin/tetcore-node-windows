@@ -1,5 +1,5 @@
 {
-  "name": "Substrate Node template",
+  "name": "Tetcore Node template",
   "context": "..",
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
@@ -22,5 +22,5 @@
      "type": "external-preview",
      "args": ["https://polkadot.js.org/apps/?rpc=wss%3A%2F%2F/$HOST/wss"]}
   ],
-  "image": "paritytech/substrate-playground-template-node-template:latest"
+  "image": "tetcoin/tetcore-playground-template-node-template:latest"
 }

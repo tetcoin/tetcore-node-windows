@@ -1,4 +1,4 @@
-// This file is part of Substrate.
+// This file is part of Tetcore.
 
 // Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
@@ -17,7 +17,7 @@
 
 //! MultiAddress type is a wrapper for multiple downstream account formats.
 //! Copied from `sp_runtime::multiaddress`, and can be removed and replaced when
-//! updating to a newer version of Substrate.
+//! updating to a newer version of Tetcore.
 
 use codec::{Encode, Decode, Codec};
 use sp_std::{vec::Vec, marker::PhantomData, fmt::Debug};

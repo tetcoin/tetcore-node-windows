@@ -1,16 +1,16 @@
 use crate::{Module, Trait};
 use sp_core::H256;
-use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
+use fabric_support::{impl_outer_origin, parameter_types, weights::Weight};
 use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup}, testing::Header, Perbill,
 };
-use frame_system as system;
+use fabric_system as system;
 
 impl_outer_origin! {
 	pub enum Origin for Test {}
 }
 
-// Configure a mock runtime to test the pallet.
+// Configure a mock runtime to test the noble.
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct Test;
@@ -42,7 +42,7 @@ impl system::Trait for Test {
 	type MaximumBlockLength = MaximumBlockLength;
 	type AvailableBlockRatio = AvailableBlockRatio;
 	type Version = ();
-	type PalletInfo = ();
+	type NobleInfo = ();
 	type AccountData = ();
 	type OnNewAccount = ();
 	type OnKilledAccount = ();

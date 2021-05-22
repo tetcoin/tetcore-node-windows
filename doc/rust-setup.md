@@ -3,7 +3,7 @@ title: Installation
 ---
 
 This page will guide you through the steps needed to prepare a computer for development with the
-Substrate Node Template. Since Substrate is built with
+Tetcore Node Template. Since Tetcore is built with
 [the Rust programming language](https://www.rust-lang.org/), the first thing you will need to do is
 prepare the computer for Rust development - these steps will vary based on the computer's operating
 system. Once Rust is configured, you will use its toolchains to interact with Rust projects; the
@@ -11,9 +11,9 @@ commands for Rust's toolchains will be the same for all supported, Unix-based op
 
 ## Unix-Based Operating Systems
 
-Substrate development is easiest on Unix-based operating systems like macOS or Linux. The examples
-in the Substrate [Tutorials](https://substrate.dev/tutorials) and [Recipes](https://substrate.dev/recipes/)
-use Unix-style terminals to demonstrate how to interact with Substrate from the command line.
+Tetcore development is easiest on Unix-based operating systems like macOS or Linux. The examples
+in the Tetcore [Tutorials](https://tetcore.dev/tutorials) and [Recipes](https://tetcore.dev/recipes/)
+use Unix-style terminals to demonstrate how to interact with Tetcore from the command line.
 
 ### macOS
 

@@ -1,12 +1,12 @@
 [package]
-authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
+authors = ['Tetcore DevHub <https://github.com/tetcore-developer-hub>']
 build = 'build.rs'
-description = 'A fresh FRAME-based Substrate node, ready for hacking.'
+description = 'A fresh FABRIC-based Tetcore node, ready for hacking.'
 edition = '2018'
-homepage = 'https://substrate.dev'
+homepage = 'https://tetcore.dev'
 license = 'Unlicense'
 name = 'node-template'
-repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
+repository = 'https://github.com/tetcore-developer-hub/tetcore-node-template/'
 version = '2.0.1'
 
 [[bin]]
@@ -16,7 +16,7 @@ name = 'node-template'
 targets = ['x86_64-unknown-linux-gnu']
 
 [build-dependencies]
-substrate-build-script-utils = '2.0.1'
+tetcore-build-script-utils = '2.0.1'
 
 [dependencies]
 jsonrpc-core = '15.0.0'
@@ -25,32 +25,32 @@ structopt = '0.3.8'
 # local dependencies
 node-template-runtime = { path = '../runtime', version = '2.0.1' }
 
-# Substrate dependencies
-frame-benchmarking = '2.0.1'
-frame-benchmarking-cli = '2.0.1'
-pallet-transaction-payment-rpc = '2.0.1'
-sc-basic-authorship = '0.8.1'
-sc-cli = { features = ['wasmtime'], version = '0.8.1' }
-sc-client-api = '2.0.1'
-sc-consensus = '0.8.1'
-sc-consensus-aura = '0.8.1'
-sc-executor = { features = ['wasmtime'], version = '0.8.1' }
-sc-finality-grandpa = '0.8.1'
-sc-rpc = '2.0.1'
-sc-rpc-api = '0.8.1'
-sc-service = { features = ['wasmtime'], version = '0.8.1' }
-sc-transaction-pool = '2.0.1'
-sp-api = '2.0.1'
-sp-block-builder = '2.0.1'
-sp-blockchain = '2.0.1'
-sp-consensus = '0.8.1'
-sp-consensus-aura = '0.8.1'
-sp-core = '2.0.1'
-sp-finality-grandpa = '2.0.1'
-sp-inherents = '2.0.1'
-sp-runtime = '2.0.1'
-sp-transaction-pool = '2.0.1'
-substrate-frame-rpc-system = '2.0.1'
+# Tetcore dependencies
+fabric-benchmarking = '2.0.1'
+fabric-benchmarking-cli = '2.0.1'
+noble-transaction-payment-rpc = '2.0.1'
+tc-basic-authorship = '0.8.1'
+tc-cli = { features = ['wasmtime'], version = '0.8.1' }
+tc-client-api = '2.0.1'
+tc-consensus = '0.8.1'
+tc-consensus-aura = '0.8.1'
+tc-executor = { features = ['wasmtime'], version = '0.8.1' }
+tc-finality-grandpa = '0.8.1'
+tc-rpc = '2.0.1'
+tc-rpc-api = '0.8.1'
+tc-service = { features = ['wasmtime'], version = '0.8.1' }
+tc-transaction-pool = '2.0.1'
+tp-api = '2.0.1'
+tp-block-builder = '2.0.1'
+tp-blockchain = '2.0.1'
+tp-consensus = '0.8.1'
+tp-consensus-aura = '0.8.1'
+tet-core = '2.0.1'
+tp-finality-grandpa = '2.0.1'
+tp-inherents = '2.0.1'
+tp-runtime = '2.0.1'
+tp-transaction-pool = '2.0.1'
+tetcore-fabric-rpc-system = '2.0.1'
 
 [features]
 default = []

@@ -1,0 +1,36 @@
+[package]
+authors = ['Tetcore DevHub <https://github.com/tetcore-developer-hub>']
+description = 'FABRIC noble template for defining custom runtime logic.'
+edition = '2018'
+homepage = 'https://tetcore.dev'
+license = 'Unlicense'
+name = 'noble-template'
+repository = 'https://github.com/tetcore-developer-hub/tetcore-node-template/'
+version = '2.0.1'
+
+[package.metadata.docs.rs]
+targets = ['x86_64-unknown-linux-gnu']
+
+# alias "parity-scale-code" to "codec"
+[dependencies.codec]
+default-features = false
+features = ['derive']
+package = 'parity-scale-codec'
+version = '1.3.4'
+
+[dependencies]
+fabric-support = { default-features = false, version = '2.0.0' }
+fabric-system = { default-features = false, version = '2.0.0' }
+
+[dev-dependencies]
+tet-core = { default-features = false, version = '2.0.1' }
+tet-io = { default-features = false, version = '2.0.1' }
+tp-runtime = { default-features = false, version = '2.0.1' }
+
+[features]
+default = ['std']
+std = [
+    'codec/std',
+    'fabric-support/std',
+    'fabric-system/std',
+]
