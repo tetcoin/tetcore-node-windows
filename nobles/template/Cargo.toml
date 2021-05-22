@@ -23,9 +23,9 @@ fabric-support = { default-features = false, version = '2.0.0' }
 fabric-system = { default-features = false, version = '2.0.0' }
 
 [dev-dependencies]
-tet-core = { default-features = false, version = '2.0.1' }
-tet-io = { default-features = false, version = '2.0.1' }
-tp-runtime = { default-features = false, version = '2.0.1' }
+tet-core = { default-features = false, version = '2.0.2' }
+tet-io = { default-features = false, version = '2.0.2' }
+tp-runtime = { default-features = false, version = '2.0.2' }
 
 [features]
 default = ['std']
