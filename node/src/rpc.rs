@@ -1,5 +1,5 @@
 //! A collection of node-specific RPC methods.
-//! Tetcore provides the `sc-rpc` crate, which defines the core RPC layer
+//! Tetcore provides the `tc-rpc` crate, which defines the core RPC layer
 //! used by Tetcore nodes. This file extends those RPC definitions with
 //! capabilities that are specific to this project's runtime configuration.
 
@@ -8,11 +8,11 @@
 use std::sync::Arc;
 
 use node_template_runtime::{opaque::Block, AccountId, Balance, Index};
-use sp_api::ProvideRuntimeApi;
-use sp_blockchain::{Error as BlockChainError, HeaderMetadata, HeaderBackend};
-use sp_block_builder::BlockBuilder;
-pub use sc_rpc_api::DenyUnsafe;
-use sp_transaction_pool::TransactionPool;
+use tp_api::ProvideRuntimeApi;
+use tp_blockchain::{Error as BlockChainError, HeaderMetadata, HeaderBackend};
+use tp_block_builder::BlockBuilder;
+pub use tc_rpc_api::DenyUnsafe;
+use tp_transaction_pool::TransactionPool;
 
 
 /// Full client dependencies.
@@ -28,7 +28,7 @@ pub struct FullDeps<C, P> {
 /// Instantiate all full RPC extensions.
 pub fn create_full<C, P>(
 	deps: FullDeps<C, P>,
-) -> jsonrpc_core::IoHandler<sc_rpc::Metadata> where
+) -> tetsy_jsonrpc_core::IoHandler<tc_rpc::Metadata> where
 	C: ProvideRuntimeApi<Block>,
 	C: HeaderBackend<Block> + HeaderMetadata<Block, Error=BlockChainError> + 'static,
 	C: Send + Sync + 'static,
@@ -40,7 +40,7 @@ pub fn create_full<C, P>(
 	use tetcore_fabric_rpc_system::{FullSystem, SystemApi};
 	use noble_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApi};
 
-	let mut io = jsonrpc_core::IoHandler::default();
+	let mut io = tetsy_jsonrpc_core::IoHandler::default();
 	let FullDeps {
 		client,
 		pool,

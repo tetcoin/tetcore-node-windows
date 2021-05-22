@@ -1,6 +1,6 @@
 // This file is part of Tetcore.
 
-// Copyright (C) 2017-2020 Parity Technologies (UK) Ltd.
+// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 
 use crate::{chain_spec, service};
 use crate::cli::{Cli, Subcommand};
-use sc_cli::{TetcoreCli, RuntimeVersion, Role, ChainSpec};
-use sc_service::PartialComponents;
+use tc_cli::{TetcoreCli, RuntimeVersion, Role, ChainSpec};
+use tc_service::PartialComponents;
 use node_template_runtime::Block;
 
 impl TetcoreCli for Cli {
@@ -46,7 +46,7 @@ impl TetcoreCli for Cli {
 		2017
 	}
 
-	fn load_spec(&self, id: &str) -> Result<Box<dyn sc_service::ChainSpec>, String> {
+	fn load_spec(&self, id: &str) -> Result<Box<dyn tc_service::ChainSpec>, String> {
 		Ok(match id {
 			"dev" => Box::new(chain_spec::development_config()?),
 			"" | "local" => Box::new(chain_spec::local_testnet_config()?),
@@ -62,10 +62,11 @@ impl TetcoreCli for Cli {
 }
 
 /// Parse and run command line arguments
-pub fn run() -> sc_cli::Result<()> {
+pub fn run() -> tc_cli::Result<()> {
 	let cli = Cli::from_args();
 
 	match &cli.subcommand {
+		Some(Subcommand::Key(cmd)) => cmd.run(&cli),
 		Some(Subcommand::BuildSpec(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
 			runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
@@ -126,9 +127,11 @@ pub fn run() -> sc_cli::Result<()> {
 		},
 		None => {
 			let runner = cli.create_runner(&cli.run)?;
-			runner.run_node_until_exit(|config| match config.role {
-				Role::Light => service::new_light(config),
-				_ => service::new_full(config),
+			runner.run_node_until_exit(|config| async move {
+				match config.role {
+					Role::Light => service::new_light(config),
+					_ => service::new_full(config),
+				}.map_err(tc_cli::Error::Service)
 			})
 		}
 	}

@@ -1,96 +1,95 @@
 [package]
-authors = ['Tetcore DevHub <https://github.com/tetcore-developer-hub>']
-edition = '2018'
-homepage = 'https://tetcore.dev'
-license = 'Unlicense'
-name = 'node-template-runtime'
-repository = 'https://github.com/tetcore-developer-hub/tetcore-node-template/'
-version = '2.0.1'
+name = "node-template-runtime"
+version = "2.0.0"
+authors = ["Anonymous"]
+description = "Tetcore node template runtime"
+edition = "2018"
+license = "Unlicense"
+keywords = ["tetcoin", "tetcore", "crypto", "blockchain", "framework"]
+categories = ["cryptography::cryptocurrencies"]
+homepage = "https://core.tetcoin.org"
+repository = "https://github.com/tetcoin/tetcore"
 
 [package.metadata.docs.rs]
-targets = ['x86_64-unknown-linux-gnu']
-
-[build-dependencies]
-tetcore-wasm-builder = '3.0.0'
-
-# alias "parity-scale-code" to "codec"
-[dependencies.codec]
-default-features = false
-features = ['derive']
-package = 'parity-scale-codec'
-version = '1.3.4'
+targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-hex-literal = { optional = true, version = '0.3.1' }
-serde = { features = ['derive'], optional = true, version = '1.0.119' }
+codec = { package = "tetsy-scale-codec", version = "2.0.1", default-features = false, features = ["derive"] }
 
-# local dependencies
-noble-template = { path = '../nobles/template', default-features = false, version = '2.0.1' }
+noble-aura = { version = "2.0.1", default-features = false, path = "../../../fabric/aura" }
+noble-balances = { version = "2.0.1", default-features = false, path = "../../../fabric/balances" }
+fabric-support = { version = "2.0.0", default-features = false, path = "../../../fabric/support" }
+noble-grandpa = { version = "2.0.0", default-features = false, path = "../../../fabric/grandpa" }
+noble-randomness-collective-flip = { version = "2.0.0", default-features = false, path = "../../../fabric/randomness-collective-flip" }
+noble-sudo = { version = "2.0.0", default-features = false, path = "../../../fabric/sudo" }
+fabric-system = { version = "2.0.0", default-features = false, path = "../../../fabric/system" }
+noble-timestamp = { version = "2.0.0", default-features = false, path = "../../../fabric/timestamp" }
+noble-transaction-payment = { version = "2.0.0", default-features = false, path = "../../../fabric/transaction-payment" }
+fabric-executive = { version = "2.0.0", default-features = false, path = "../../../fabric/executive" }
+serde = { version = "1.0.101", optional = true, features = ["derive"] }
+tp-api = { version = "2.0.2", default-features = false, path = "../../../primitives/api" }
+tp-block-builder = { path = "../../../primitives/block-builder", default-features = false, version = "2.0.2"}
+tp-consensus-aura = { version = "0.8.2", default-features = false, path = "../../../primitives/consensus/aura" }
+tet-core = { version = "2.0.2", default-features = false, path = "../../../primitives/core" }
+tp-inherents = { path = "../../../primitives/inherents", default-features = false, version = "2.0.2"}
+tp-offchain = { version = "2.0.2", default-features = false, path = "../../../primitives/offchain" }
+tp-runtime = { version = "2.0.2", default-features = false, path = "../../../primitives/runtime" }
+tp-session = { version = "2.0.2", default-features = false, path = "../../../primitives/session" }
+tetcore-std = { version = "2.0.2", default-features = false, path = "../../../primitives/std" }
+tp-transaction-pool = { version = "2.0.2", default-features = false, path = "../../../primitives/transaction-pool" }
+tp-version = { version = "2.0.2", default-features = false, path = "../../../primitives/version" }
 
-# Tetcore dependencies
-fabric-benchmarking = { default-features = false, optional = true, version = '2.0.0' }
-fabric-executive = { default-features = false, version = '2.0.0' }
-fabric-support = { default-features = false, version = '2.0.0' }
-fabric-system = { default-features = false, version = '2.0.0' }
-fabric-system-benchmarking = { default-features = false, optional = true, version = '2.0.0' }
-fabric-system-rpc-runtime-api = { default-features = false, version = '2.0.0' }
-noble-aura = { default-features = false, version = '2.0.1' }
-noble-balances = { default-features = false, version = '2.0.1' }
-noble-grandpa = { default-features = false, version = '2.0.0' }
-noble-randomness-collective-flip = { default-features = false, version = '2.0.0' }
-noble-sudo = { default-features = false, version = '2.0.0' }
-noble-timestamp = { default-features = false, version = '2.0.0' }
-noble-transaction-payment = { default-features = false, version = '2.0.0' }
-noble-transaction-payment-rpc-runtime-api = { default-features = false, version = '2.0.0' }
-tp-api = { default-features = false, version = '2.0.2' }
-tp-block-builder = { default-features = false, version = '2.0.2' }
-tp-consensus-aura = { default-features = false, version = '0.8.2' }
-tet-core = { default-features = false, version = '2.0.2' }
-tp-inherents = { default-features = false, version = '2.0.2' }
-tp-offchain = { default-features = false, version = '2.0.2' }
-tp-runtime = { default-features = false, version = '2.0.2' }
-tp-session = { default-features = false, version = '2.0.2' }
-tetcore-std = { default-features = false, version = '2.0.2' }
-tp-transaction-pool = { default-features = false, version = '2.0.2' }
-tp-version = { default-features = false, version = '2.0.2' }
+# Used for the node template's RPCs
+fabric-system-rpc-runtime-api = { version = "2.0.0", default-features = false, path = "../../../fabric/system/rpc/runtime-api/" }
+noble-transaction-payment-rpc-runtime-api = { version = "2.0.0", default-features = false, path = "../../../fabric/transaction-payment/rpc/runtime-api/" }
+
+# Used for runtime benchmarking
+fabric-benchmarking = { version = "2.0.0", default-features = false, path = "../../../fabric/benchmarking", optional = true }
+fabric-system-benchmarking = { version = "2.0.0", default-features = false, path = "../../../fabric/system/benchmarking", optional = true }
+hex-literal = { version = "0.3.1", optional = true }
+
+template = { version = "2.0.0", default-features = false, path = "../nobles/template", package = "noble-template" }
+
+[build-dependencies]
+wasm-builder = { version = "3.0.0", path = "../../../utils/wasm-builder" }
 
 [features]
-default = ['std']
-runtime-benchmarks = [
-    'hex-literal',
-    'fabric-benchmarking',
-    'fabric-support/runtime-benchmarks',
-    'fabric-system-benchmarking',
-    'fabric-system/runtime-benchmarks',
-    'noble-balances/runtime-benchmarks',
-    'noble-timestamp/runtime-benchmarks',
-    'tp-runtime/runtime-benchmarks',
-]
+default = ["std"]
 std = [
-    'codec/std',
-    'serde',
-    'fabric-executive/std',
-    'fabric-support/std',
-    'fabric-system/std',
-    'fabric-system-rpc-runtime-api/std',
-    'noble-aura/std',
-    'noble-balances/std',
-    'noble-grandpa/std',
-    'noble-randomness-collective-flip/std',
-    'noble-sudo/std',
-    'noble-template/std',
-    'noble-timestamp/std',
-    'noble-transaction-payment/std',
-    'noble-transaction-payment-rpc-runtime-api/std',
-    'tp-api/std',
-    'tp-block-builder/std',
-    'tp-consensus-aura/std',
-    'tet-core/std',
-    'tp-inherents/std',
-    'tp-offchain/std',
-    'tp-runtime/std',
-    'tp-session/std',
-    'tetcore-std/std',
-    'tp-transaction-pool/std',
-    'tp-version/std',
+	"codec/std",
+	"fabric-executive/std",
+	"fabric-support/std",
+	"noble-aura/std",
+	"noble-balances/std",
+	"noble-grandpa/std",
+	"noble-randomness-collective-flip/std",
+	"noble-sudo/std",
+	"noble-timestamp/std",
+	"noble-transaction-payment/std",
+	"noble-transaction-payment-rpc-runtime-api/std",
+	"serde",
+	"tp-api/std",
+	"tp-block-builder/std",
+	"tp-consensus-aura/std",
+	"tet-core/std",
+	"tp-inherents/std",
+	"tp-offchain/std",
+	"tp-runtime/std",
+	"tp-session/std",
+	"tetcore-std/std",
+	"tp-transaction-pool/std",
+	"tp-version/std",
+	"fabric-system/std",
+	"fabric-system-rpc-runtime-api/std",
+	"template/std",
+]
+runtime-benchmarks = [
+	"tp-runtime/runtime-benchmarks",
+	"fabric-benchmarking",
+	"fabric-support/runtime-benchmarks",
+	"fabric-system-benchmarking",
+	"hex-literal",
+	"fabric-system/runtime-benchmarks",
+	"noble-balances/runtime-benchmarks",
+	"noble-timestamp/runtime-benchmarks",
 ]

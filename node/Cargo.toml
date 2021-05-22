@@ -1,57 +1,65 @@
 [package]
-authors = ['Tetcore DevHub <https://github.com/tetcore-developer-hub>']
-build = 'build.rs'
-description = 'A fresh FABRIC-based Tetcore node, ready for hacking.'
-edition = '2018'
-homepage = 'https://tetcore.dev'
-license = 'Unlicense'
-name = 'node-template'
-repository = 'https://github.com/tetcore-developer-hub/tetcore-node-template/'
-version = '2.0.1'
-
-[[bin]]
-name = 'node-template'
+name = "node-template"
+version = "2.0.0"
+authors = ["Anonymous"]
+description = "A new fabric-based Tetcore node, ready for hacking."
+edition = "2018"
+license = "Unlicense"
+build = "build.rs"
+keywords = ["tetcoin", "tetcore", "crypto", "blockchain", "framework"]
+categories = ["cryptography::cryptocurrencies"]
+homepage = "https://core.tetcoin.org"
+repository = "https://github.com/tetcoin/tetcore"
 
 [package.metadata.docs.rs]
-targets = ['x86_64-unknown-linux-gnu']
+targets = ["x86_64-unknown-linux-gnu"]
 
-[build-dependencies]
-tetcore-build-script-utils = '2.0.1'
+[[bin]]
+name = "node-template"
 
 [dependencies]
-jsonrpc-core = '15.0.0'
-structopt = '0.3.8'
+structopt = "0.3.8"
 
-# local dependencies
-node-template-runtime = { path = '../runtime', version = '2.0.1' }
+tc-cli = { version = "0.8.0", path = "../../../client/cli", features = ["wasmtime"] }
+tet-core = { version = "2.0.2", path = "../../../primitives/core" }
+tc-executor = { version = "0.8.0", path = "../../../client/executor", features = ["wasmtime"] }
+tc-service = { version = "0.8.0", path = "../../../client/service", features = ["wasmtime"] }
+tc-telemetry = { version = "2.0.0", path = "../../../client/telemetry" }
+tc-keystore = { version = "2.0.0", path = "../../../client/keystore" }
+tp-inherents = { version = "2.0.2", path = "../../../primitives/inherents" }
+tc-transaction-pool = { version = "2.0.0", path = "../../../client/transaction-pool" }
+tp-transaction-pool = { version = "2.0.2", path = "../../../primitives/transaction-pool" }
+tc-consensus-aura = { version = "0.8.0", path = "../../../client/consensus/aura" }
+tp-consensus-aura = { version = "0.8.2", path = "../../../primitives/consensus/aura" }
+tp-consensus = { version = "0.8.2", path = "../../../primitives/consensus/common" }
+tc-consensus = { version = "0.8.0", path = "../../../client/consensus/common" }
+tc-finality-grandpa = { version = "0.8.0", path = "../../../client/finality-grandpa" }
+tp-finality-grandpa = { version = "2.0.2", path = "../../../primitives/finality-grandpa" }
+tc-client-api = { version = "2.0.0", path = "../../../client/api" }
+tp-runtime = { version = "2.0.2", path = "../../../primitives/runtime" }
 
-# Tetcore dependencies
-fabric-benchmarking = '2.0.0'
-fabric-benchmarking-cli = '2.0.0'
-noble-transaction-payment-rpc = '2.0.0'
-tc-basic-authorship = '0.8.0'
-tc-cli = { features = ['wasmtime'], version = '0.8.0' }
-tc-client-api = '2.0.0'
-tc-consensus = '0.8.0'
-tc-consensus-aura = '0.8.0'
-tc-executor = { features = ['wasmtime'], version = '0.8.0' }
-tc-finality-grandpa = '0.8.0'
-tc-rpc = '2.0.0'
-tc-rpc-api = '0.8.0'
-tc-service = { features = ['wasmtime'], version = '0.8.0' }
-tc-transaction-pool = '2.0.1'
-tp-api = '2.0.2'
-tp-block-builder = '2.0.2'
-tp-blockchain = '2.0.2'
-tp-consensus = '0.8.2'
-tp-consensus-aura = '0.8.2'
-tet-core = '2.0.2'
-tp-finality-grandpa = '2.0.2'
-tp-inherents = '2.0.2'
-tp-runtime = '2.0.2'
-tp-transaction-pool = '2.0.2'
-tetcore-fabric-rpc-system = '2.0.1'
+# These dependencies are used for the node template's RPCs
+tetsy-jsonrpc-core = "15.1.0"
+tc-rpc = { version = "2.0.0", path = "../../../client/rpc" }
+tp-api = { version = "2.0.2", path = "../../../primitives/api" }
+tc-rpc-api = { version = "0.8.0", path = "../../../client/rpc-api" }
+tp-blockchain = { version = "2.0.2", path = "../../../primitives/blockchain" }
+tp-block-builder = { version = "2.0.2", path = "../../../primitives/block-builder" }
+tc-basic-authorship = { version = "0.8.0", path = "../../../client/basic-authorship" }
+tetcore-fabric-rpc-system = { version = "2.0.0", path = "../../../utils/fabric/rpc/system" }
+noble-transaction-payment-rpc = { version = "2.0.0", path = "../../../fabric/transaction-payment/rpc/" }
+
+# These dependencies are used for runtime benchmarking
+fabric-benchmarking = { version = "2.0.0", path = "../../../fabric/benchmarking" }
+fabric-benchmarking-cli = { version = "2.0.1", path = "../../../utils/fabric/benchmarking-cli" }
+
+node-template-runtime = { version = "2.0.0", path = "../runtime" }
+
+[build-dependencies]
+build-script-utils = { version = "2.0.1", path = "../../../utils/build-script-utils" }
 
 [features]
 default = []
-runtime-benchmarks = ['node-template-runtime/runtime-benchmarks']
+runtime-benchmarks = [
+	"node-template-runtime/runtime-benchmarks",
+]

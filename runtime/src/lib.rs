@@ -6,29 +6,29 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use sp_std::prelude::*;
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
-use sp_runtime::{
+use tetcore_std::prelude::*;
+use tet_core::{crypto::KeyTypeId, OpaqueMetadata};
+use tp_runtime::{
 	ApplyExtrinsicResult, generic, create_runtime_str, impl_opaque_keys, MultiSignature,
 	transaction_validity::{TransactionValidity, TransactionSource},
 };
-use sp_runtime::traits::{
-	BlakeTwo256, Block as BlockT, Verify, IdentifyAccount, NumberFor, Saturating,
+use tp_runtime::traits::{
+	BlakeTwo256, Block as BlockT, AccountIdLookup, Verify, IdentifyAccount, NumberFor,
 };
-use sp_api::impl_runtime_apis;
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
+use tp_api::impl_runtime_apis;
+use tp_consensus_aura::sr25519::AuthorityId as AuraId;
 use noble_grandpa::{AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList};
 use noble_grandpa::fg_primitives;
-use sp_version::RuntimeVersion;
+use tp_version::RuntimeVersion;
 #[cfg(feature = "std")]
-use sp_version::NativeVersion;
+use tp_version::NativeVersion;
 
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
-pub use sp_runtime::BuildStorage;
+pub use tp_runtime::BuildStorage;
 pub use noble_timestamp::Call as TimestampCall;
 pub use noble_balances::Call as BalancesCall;
-pub use sp_runtime::{Permill, Perbill};
+pub use tp_runtime::{Permill, Perbill};
 pub use fabric_support::{
 	construct_runtime, parameter_types, StorageValue,
 	traits::{KeyOwnerProofSystem, Randomness},
@@ -37,9 +37,10 @@ pub use fabric_support::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 	},
 };
+use noble_transaction_payment::CurrencyAdapter;
 
 /// Import the template noble.
-pub use noble_template;
+pub use template;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -62,7 +63,7 @@ pub type Balance = u128;
 pub type Index = u32;
 
 /// A hash of some data used by the chain.
-pub type Hash = sp_core::H256;
+pub type Hash = tet_core::H256;
 
 /// Digest item type.
 pub type DigestItem = generic::DigestItem<Hash>;
@@ -74,7 +75,7 @@ pub type DigestItem = generic::DigestItem<Hash>;
 pub mod opaque {
 	use super::*;
 
-	pub use sp_runtime::OpaqueExtrinsic as UncheckedExtrinsic;
+	pub use tp_runtime::OpaqueExtrinsic as UncheckedExtrinsic;
 
 	/// Opaque block header type.
 	pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
@@ -95,12 +96,18 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("node-template"),
 	impl_name: create_runtime_str!("node-template"),
 	authoring_version: 1,
-	spec_version: 100,
+	spec_version: 1,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
 };
 
+/// This determines the average expected block time that we are targetting.
+/// Blocks will be produced at a minimum duration defined by `SLOT_DURATION`.
+/// `SLOT_DURATION` is picked up by `noble_timestamp` which is in turn picked
+/// up by `noble_aura` to implement `fn slot_duration()`.
+///
+/// Change this to adjust the block time.
 pub const MILLISECS_PER_BLOCK: u64 = 6000;
 
 pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;
@@ -119,29 +126,34 @@ pub fn native_version() -> NativeVersion {
 	}
 }
 
+const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
+
 parameter_types! {
+	pub const Version: RuntimeVersion = VERSION;
 	pub const BlockHashCount: BlockNumber = 2400;
 	/// We allow for 2 seconds of compute with a 6 second average block time.
-	pub const MaximumBlockWeight: Weight = 2 * WEIGHT_PER_SECOND;
-	pub const AvailableBlockRatio: Perbill = Perbill::from_percent(75);
-	/// Assume 10% of weight for average on_initialize calls.
-	pub MaximumExtrinsicWeight: Weight = AvailableBlockRatio::get()
-		.saturating_sub(Perbill::from_percent(10)) * MaximumBlockWeight::get();
-	pub const MaximumBlockLength: u32 = 5 * 1024 * 1024;
-	pub const Version: RuntimeVersion = VERSION;
+	pub BlockWeights: fabric_system::limits::BlockWeights = fabric_system::limits::BlockWeights
+		::with_sensible_defaults(2 * WEIGHT_PER_SECOND, NORMAL_DISPATCH_RATIO);
+	pub BlockLength: fabric_system::limits::BlockLength = fabric_system::limits::BlockLength
+		::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+	pub const SS58Prefix: u8 = 42;
 }
 
 // Configure FABRIC nobles to include in runtime.
 
-impl fabric_system::Trait for Runtime {
+impl fabric_system::Config for Runtime {
 	/// The basic call filter to use in dispatchable.
 	type BaseCallFilter = ();
+	/// Block & extrinsics weights: base values and limits.
+	type BlockWeights = BlockWeights;
+	/// The maximum length of a block (in bytes).
+	type BlockLength = BlockLength;
 	/// The identifier used to distinguish between accounts.
 	type AccountId = AccountId;
 	/// The aggregated dispatch type that is available for extrinsics.
 	type Call = Call;
 	/// The lookup mechanism to get account ID from whatever is passed in dispatchers.
-	type Lookup = multiaddress::AccountIdLookup<AccountId, ()>;
+	type Lookup = AccountIdLookup<AccountId, ()>;
 	/// The index type for storing how many extrinsics an account has signed.
 	type Index = Index;
 	/// The index type for blocks.
@@ -158,24 +170,8 @@ impl fabric_system::Trait for Runtime {
 	type Origin = Origin;
 	/// Maximum number of block number to block hash mappings to keep (oldest pruned first).
 	type BlockHashCount = BlockHashCount;
-	/// Maximum weight of each block.
-	type MaximumBlockWeight = MaximumBlockWeight;
 	/// The weight of database operations that the runtime can invoke.
 	type DbWeight = RocksDbWeight;
-	/// The weight of the overhead invoked on the block import process, independent of the
-	/// extrinsics included in that block.
-	type BlockExecutionWeight = BlockExecutionWeight;
-	/// The base weight of any extrinsic processed by the runtime, independent of the
-	/// logic of that extrinsic. (Signature verification, nonce increment, fee, etc...)
-	type ExtrinsicBaseWeight = ExtrinsicBaseWeight;
-	/// The maximum weight that a single extrinsic of `Normal` dispatch class can have,
-	/// idependent of the logic of that extrinsics. (Roughly max block weight - average on
-	/// initialize cost).
-	type MaximumExtrinsicWeight = MaximumExtrinsicWeight;
-	/// Maximum size of all encoded transactions (in bytes) that are allowed in one block.
-	type MaximumBlockLength = MaximumBlockLength;
-	/// Portion of the block weight that is available to all normal transactions.
-	type AvailableBlockRatio = AvailableBlockRatio;
 	/// Version of the runtime.
 	type Version = Version;
 	/// Converts a module to the index of the module in `construct_runtime!`.
@@ -190,13 +186,15 @@ impl fabric_system::Trait for Runtime {
 	type AccountData = noble_balances::AccountData<Balance>;
 	/// Weight information for the extrinsics of this noble.
 	type SystemWeightInfo = ();
+	/// This is used as an identifier of the chain. 42 is the generic tetcore prefix.
+	type SS58Prefix = SS58Prefix;
 }
 
-impl noble_aura::Trait for Runtime {
+impl noble_aura::Config for Runtime {
 	type AuthorityId = AuraId;
 }
 
-impl noble_grandpa::Trait for Runtime {
+impl noble_grandpa::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
 
@@ -219,7 +217,7 @@ parameter_types! {
 	pub const MinimumPeriod: u64 = SLOT_DURATION / 2;
 }
 
-impl noble_timestamp::Trait for Runtime {
+impl noble_timestamp::Config for Runtime {
 	/// A timestamp: milliseconds since the unix epoch.
 	type Moment = u64;
 	type OnTimestampSet = Aura;
@@ -232,7 +230,7 @@ parameter_types! {
 	pub const MaxLocks: u32 = 50;
 }
 
-impl noble_balances::Trait for Runtime {
+impl noble_balances::Config for Runtime {
 	type MaxLocks = MaxLocks;
 	/// The type for recording an account's balance.
 	type Balance = Balance;
@@ -241,28 +239,27 @@ impl noble_balances::Trait for Runtime {
 	type DustRemoval = ();
 	type ExistentialDeposit = ExistentialDeposit;
 	type AccountStore = System;
-	type WeightInfo = ();
+	type WeightInfo = noble_balances::weights::TetcoreWeight<Runtime>;
 }
 
 parameter_types! {
 	pub const TransactionByteFee: Balance = 1;
 }
 
-impl noble_transaction_payment::Trait for Runtime {
-	type Currency = Balances;
-	type OnTransactionPayment = ();
+impl noble_transaction_payment::Config for Runtime {
+	type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
 	type TransactionByteFee = TransactionByteFee;
 	type WeightToFee = IdentityFee<Balance>;
 	type FeeMultiplierUpdate = ();
 }
 
-impl noble_sudo::Trait for Runtime {
+impl noble_sudo::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
 }
 
-/// Configure the template noble in nobles/template.
-impl noble_template::Trait for Runtime {
+/// Configure the noble template in nobles/template.
+impl template::Config for Runtime {
 	type Event = Event;
 }
 
@@ -282,13 +279,12 @@ construct_runtime!(
 		TransactionPayment: noble_transaction_payment::{Module, Storage},
 		Sudo: noble_sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the template noble in the runtime.
-		TemplateModule: noble_template::{Module, Call, Storage, Event<T>},
+		TemplateModule: template::{Module, Call, Storage, Event<T>},
 	}
 );
 
 /// The address format for describing accounts.
-mod multiaddress;
-pub type Address = multiaddress::MultiAddress<AccountId, ()>;
+pub type Address = tp_runtime::MultiAddress<AccountId, ()>;
 /// Block header type as expected by this runtime.
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type as expected by this runtime.
@@ -321,7 +317,7 @@ pub type Executive = fabric_executive::Executive<
 >;
 
 impl_runtime_apis! {
-	impl sp_api::Core<Block> for Runtime {
+	impl tp_api::Core<Block> for Runtime {
 		fn version() -> RuntimeVersion {
 			VERSION
 		}
@@ -335,13 +331,13 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl sp_api::Metadata<Block> for Runtime {
+	impl tp_api::Metadata<Block> for Runtime {
 		fn metadata() -> OpaqueMetadata {
 			Runtime::metadata().into()
 		}
 	}
 
-	impl sp_block_builder::BlockBuilder<Block> for Runtime {
+	impl tp_block_builder::BlockBuilder<Block> for Runtime {
 		fn apply_extrinsic(extrinsic: <Block as BlockT>::Extrinsic) -> ApplyExtrinsicResult {
 			Executive::apply_extrinsic(extrinsic)
 		}
@@ -350,15 +346,14 @@ impl_runtime_apis! {
 			Executive::finalize_block()
 		}
 
-		fn inherent_extrinsics(data: sp_inherents::InherentData) ->
-			Vec<<Block as BlockT>::Extrinsic> {
+		fn inherent_extrinsics(data: tp_inherents::InherentData) -> Vec<<Block as BlockT>::Extrinsic> {
 			data.create_extrinsics()
 		}
 
 		fn check_inherents(
 			block: Block,
-			data: sp_inherents::InherentData,
-		) -> sp_inherents::CheckInherentsResult {
+			data: tp_inherents::InherentData,
+		) -> tp_inherents::CheckInherentsResult {
 			data.check_extrinsics(&block)
 		}
 
@@ -367,7 +362,7 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl sp_transaction_pool::runtime_api::TaggedTransactionQueue<Block> for Runtime {
+	impl tp_transaction_pool::runtime_api::TaggedTransactionQueue<Block> for Runtime {
 		fn validate_transaction(
 			source: TransactionSource,
 			tx: <Block as BlockT>::Extrinsic,
@@ -376,13 +371,13 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl sp_offchain::OffchainWorkerApi<Block> for Runtime {
+	impl tp_offchain::OffchainWorkerApi<Block> for Runtime {
 		fn offchain_worker(header: &<Block as BlockT>::Header) {
 			Executive::offchain_worker(header)
 		}
 	}
 
-	impl sp_consensus_aura::AuraApi<Block, AuraId> for Runtime {
+	impl tp_consensus_aura::AuraApi<Block, AuraId> for Runtime {
 		fn slot_duration() -> u64 {
 			Aura::slot_duration()
 		}
@@ -392,7 +387,7 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl sp_session::SessionKeys<Block> for Runtime {
+	impl tp_session::SessionKeys<Block> for Runtime {
 		fn generate_session_keys(seed: Option<Vec<u8>>) -> Vec<u8> {
 			opaque::SessionKeys::generate(seed)
 		}
@@ -436,13 +431,18 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl noble_transaction_payment_rpc_runtime_api::TransactionPaymentApi<Block, Balance>
-		for Runtime {
+	impl noble_transaction_payment_rpc_runtime_api::TransactionPaymentApi<Block, Balance> for Runtime {
 		fn query_info(
 			uxt: <Block as BlockT>::Extrinsic,
 			len: u32,
 		) -> noble_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo<Balance> {
 			TransactionPayment::query_info(uxt, len)
+		}
+		fn query_fee_details(
+			uxt: <Block as BlockT>::Extrinsic,
+			len: u32,
+		) -> noble_transaction_payment::FeeDetails<Balance> {
+			TransactionPayment::query_fee_details(uxt, len)
 		}
 	}
 
@@ -450,28 +450,23 @@ impl_runtime_apis! {
 	impl fabric_benchmarking::Benchmark<Block> for Runtime {
 		fn dispatch_benchmark(
 			config: fabric_benchmarking::BenchmarkConfig
-		) -> Result<Vec<fabric_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
+		) -> Result<Vec<fabric_benchmarking::BenchmarkBatch>, tp_runtime::RuntimeString> {
 			use fabric_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
 
 			use fabric_system_benchmarking::Module as SystemBench;
-			impl fabric_system_benchmarking::Trait for Runtime {}
+			impl fabric_system_benchmarking::Config for Runtime {}
 
 			let whitelist: Vec<TrackedStorageKey> = vec![
 				// Block Number
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef702a5c1b19ab7a04f536c519aca4983ac")
-					.to_vec().into(),
+				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef702a5c1b19ab7a04f536c519aca4983ac").to_vec().into(),
 				// Total Issuance
-				hex_literal::hex!("c2261276cc9d1f8598ea4b6a74b15c2f57c875e4cff74148e4628f264b974c80")
-					.to_vec().into(),
+				hex_literal::hex!("c2261276cc9d1f8598ea4b6a74b15c2f57c875e4cff74148e4628f264b974c80").to_vec().into(),
 				// Execution Phase
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef7ff553b5a9862a516939d82b3d3d8661a")
-					.to_vec().into(),
+				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef7ff553b5a9862a516939d82b3d3d8661a").to_vec().into(),
 				// Event Count
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef70a98fdbe9ce6c55837576c60c7af3850")
-					.to_vec().into(),
+				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef70a98fdbe9ce6c55837576c60c7af3850").to_vec().into(),
 				// System Events
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7")
-					.to_vec().into(),
+				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7").to_vec().into(),
 			];
 
 			let mut batches = Vec::<BenchmarkBatch>::new();

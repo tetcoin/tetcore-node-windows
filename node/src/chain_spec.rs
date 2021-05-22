@@ -1,18 +1,18 @@
-use sp_core::{Pair, Public, sr25519};
+use tet_core::{Pair, Public, sr25519};
 use node_template_runtime::{
 	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig,
 	SudoConfig, SystemConfig, WASM_BINARY, Signature
 };
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::traits::{Verify, IdentifyAccount};
-use sc_service::ChainType;
+use tp_consensus_aura::sr25519::AuthorityId as AuraId;
+use tp_finality_grandpa::AuthorityId as GrandpaId;
+use tp_runtime::traits::{Verify, IdentifyAccount};
+use tc_service::ChainType;
 
 // The URL for the telemetry server.
 // const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 
 /// Specialized `ChainSpec`. This is a specialization of the general Tetcore ChainSpec type.
-pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig>;
+pub type ChainSpec = tc_service::GenericChainSpec<GenesisConfig>;
 
 /// Generate a crypto pair from seed.
 pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -39,7 +39,7 @@ pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
 }
 
 pub fn development_config() -> Result<ChainSpec, String> {
-	let wasm_binary = WASM_BINARY.ok_or("Development wasm binary not available".to_string())?;
+	let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
@@ -78,7 +78,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 }
 
 pub fn local_testnet_config() -> Result<ChainSpec, String> {
-	let wasm_binary = WASM_BINARY.ok_or("Development wasm binary not available".to_string())?;
+	let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
