@@ -23,28 +23,22 @@ serde = { version = "1.0.101" }
 [dependencies.fabric-support]
 default-features = false
 version = "2.0.0"
-path = "../../../../fabric/support"
 
 [dependencies.fabric-system]
 default-features = false
 version = "2.0.0"
-path = "../../../../fabric/system"
 
 [dev-dependencies.tet-core]
 default-features = false
 version = "2.0.2"
-path = "../../../../primitives/core"
 
 [dev-dependencies.tet-io]
 default-features = false
 version = "2.0.2"
-path = "../../../../primitives/io"
 
 [dev-dependencies.tp-runtime]
 default-features = false
 version = "2.0.2"
-path = "../../../../primitives/runtime"
-
 
 [features]
 default = ['std']
