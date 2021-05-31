@@ -1,6 +1,6 @@
-# Tetcore Node Template
+# Tetcore Node Windows
 
-A new FABRIC-based Tetcore node, ready for hacking :rocket:
+A new FABRIC-based Tetcore Node for Windows, ready for hacking :rocket:
 
 ## Local Development
 
