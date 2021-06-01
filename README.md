@@ -6,19 +6,10 @@ A new FABRIC-based Tetcore Node for Windows, ready for hacking :rocket:
 
 Follow these steps to prepare a local Tetcore development environment :hammer_and_wrench:
 
-### Simple Setup
-
-Install all the required dependencies with a single command (be patient, this can take up to 30
-minutes).
-
-```bash
-curl https://gettetcore.io -sSf | bash -s -- --fast
-```
-
-### Manual Setup
+### Setup
 
 Find manual setup instructions at the
-[Tetcore Developer Hub](https://tetcoin.org/docs/en/knowledgebase/getting-started/#manual-installation).
+[Tetcore Developer Hub](https://core.tetcoin.org/docs/en/knowledgebase/getting-started/#manual-installation).
 
 ### Build
 
