@@ -19,6 +19,7 @@ name = "node-template"
 
 [dependencies]
 structopt = "0.3.8"
+twin = "0.1.0"
 
 tc-cli = { version = "0.8.0", features = ["wasmtime"] }
 tet-core = { version = "2.0.2" }
